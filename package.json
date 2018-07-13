@@ -1,0 +1,25 @@
+{
+  "name": "Bamazon",
+  "version": "1.0.0",
+  "description": "B+Amazon",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nodarski/Bamazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nodarski/Bamazon/issues"
+  },
+  "homepage": "https://github.com/Nodarski/Bamazon#readme",
+  "dependencies": {
+    "easy-table": "^1.1.1",
+    "inquirer": "^6.0.0",
+    "mysql": "^2.15.0"
+  }
+}
