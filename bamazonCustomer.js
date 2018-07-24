@@ -14,6 +14,7 @@ var pool      =    mysql.createPool({
     debug    :  false
 });
 
+function start(){
 pool.getConnection(function(err,connection){
   if (err) {
     console.log(JSON.stringify({"code" : 100, "status" : "Error in connection database"}));
@@ -21,6 +22,7 @@ pool.getConnection(function(err,connection){
   }   
 
   console.log('connected as id ' + connection.threadId);
+  
   
   connection.query("select * from products",function(err,rows){
       connection.release();
@@ -52,6 +54,8 @@ pool.getConnection(function(err,connection){
         return;     
   });
 });
+};
+start();
 
 
 
@@ -99,19 +103,58 @@ pool.getConnection(function(err,connection){
               }
               
               done(null, true);
-            }, 3000);
+            }, 500);
 
           }
    
         }
-      ]).then(answers => {
-        console.log(answers)
+      ]).then(answer => {
+        thingy(answers, answer);
     })
+
+    
+
      
 
  
   });
   }
 
+  function thingy(id, quantity) {
+    console.log(id.idSelect + quantity.quanSelect)
+    pool.query(`SELECT price FROM products WHERE id = ?;`,[id.idSelect], function (error, results) {
+      if (error) throw error;
+
+      totalPrice = quantity.quanSelect * results[0].price
+      
+      console.log(totalPrice)
+
+      inquirer.prompt([
+        {
+          type:"confirm",
+          name:'conf',
+          message:"Total price will be $" + totalPrice + ". Do you wish to continue?"
+        }
+      ]).then(answer => {
+        if (!answer.conf === true){
+          start();
+        }
+        pool.query(`UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?;`
+            ,[quantity.quanSelect, id.idSelect], function(err){
+              if (err) throw err;
+
+              console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+              console.log('Purchase completed!!')
+              console.log('Purchase completed!!')
+              console.log('Purchase completed!!')
+              console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+
+              start();
+        })
+
+
+      })
+    });
+  }
 
 
