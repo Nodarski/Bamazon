@@ -3,10 +3,10 @@ var Table = require('easy-table')
 var mysql     =    require('mysql');
 var inquirer = require('inquirer');
 
-var idOption=[];
+
 
 var pool      =    mysql.createPool({
-    connectionLimit : 100, //important
+    connectionLimit : 100, 
     host     : 'localhost',
     user     : 'root',
     password : 'root',
@@ -26,6 +26,7 @@ pool.getConnection(function(err,connection){
       connection.release();
       if(!err) {
           var t = new Table
+          idOption = [ ];
           
  
         rows.forEach(function(products) {
@@ -34,14 +35,14 @@ pool.getConnection(function(err,connection){
             t.cell('Product Price', '$'+products.price);
             t.newRow()
             idis = products.id.toString();
-            idOption.push(idis);
+            stckQuan = products.stock_quantity.toString();
+            idOption.push({id:idis,quantity:stckQuan});
 
 
         })
         
         console.log(t.toString())
-        console.log(idOption );
-        inquire();
+        inquire(idOption);
       }           
 
   });
@@ -52,16 +53,63 @@ pool.getConnection(function(err,connection){
   });
 });
 
- function inquire() {
+
+
+ function inquire(idOption) {
+   promtId = [];
+   idOption.forEach(function(options){
+     promtId.push(options.id.toString())
+   })
+
     inquirer.prompt([
      {
        type: "list",
        name: "idSelect",
        message: "Select your desired Product id.",
-       choices: idOption
+       choices: promtId
      }
-   ]).then(answers => {
-     console.log(answers)
+    ]).then(answers => {
+      var quanAvail;
+     for(i=0;i<idOption.length;i++){
+       if(idOption[i].id === answers.idSelect){
+         quanAvail = idOption[i].quantity;
+       }
+     }
+
+
+      inquirer.prompt([
+        {
+          type: "input",
+          name: "quanSelect",
+          message:"Select quantity, please." + quanAvail + " in stock",
+          validate: function(input) {
+           inputt = parseInt(input)
+
+
+            var done = this.async();
+ 
+            setTimeout(function() {
+              if (!inputt) {
+                
+                done('You need to provide a number');
+                return;
+              }
+              if (inputt > quanAvail){
+                done("Not enough in stock, please select a lower quantity.");
+              }
+              
+              done(null, true);
+            }, 3000);
+
+          }
+   
+        }
+      ]).then(answers => {
+        console.log(answers)
+    })
+     
+
+ 
   });
   }
 
