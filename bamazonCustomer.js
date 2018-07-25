@@ -40,6 +40,10 @@ pool.getConnection(function(err,connection){
             stckQuan = products.stock_quantity.toString();
             idOption.push({id:idis,quantity:stckQuan});
 
+            if (products.stock_quantity.toString() === '0'){
+              console.log("(ID: " + products.id + ")  " +products.product_name + " is OUT OF STOCK!!");
+            }
+
 
         })
         
@@ -62,7 +66,12 @@ start();
  function inquire(idOption) {
    promtId = [];
    idOption.forEach(function(options){
+     if (options.quantity.toString() != 0){
      promtId.push(options.id.toString())
+     }
+     
+      
+     
    })
 
     inquirer.prompt([
@@ -85,7 +94,7 @@ start();
         {
           type: "input",
           name: "quanSelect",
-          message:"Select quantity, please." + quanAvail + " in stock",
+          message:"Select quantity, please.  " + quanAvail + "  in stock",
           validate: function(input) {
            inputt = parseInt(input)
 
