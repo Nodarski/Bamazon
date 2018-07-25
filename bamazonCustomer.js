@@ -132,13 +132,11 @@ function inquire(idOption) {
 };
 
 function thingy(id, quantity, connection) {
-    console.log(id.idSelect + quantity.quanSelect);
-    connection.query(`SELECT price FROM products WHERE id = ?;`,
+    connection.query(`SELECT price, stock_quantity FROM products WHERE id = ?;`,
         [id.idSelect], function (error, results) {
-            
 
         if (error) throw error;
-
+        if (quantity < results[0].stock_quantity) throw "shiet, someone bought it faster than you. we dont have that stock anymore"
         totalPrice = quantity.quanSelect * results[0].price;
 
         inquirer.prompt([
@@ -149,7 +147,14 @@ function thingy(id, quantity, connection) {
             }
         ]).then(answer => {
             if (!answer.conf === true){
-                console.log("hope this works!!")
+                console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+                console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+                console.log("Refreshing inventory.");
+                console.log("Refreshing inventory.");
+                console.log("Refreshing inventory.");
+                console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+                console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+
                 start();
                 
             }
@@ -161,9 +166,18 @@ function thingy(id, quantity, connection) {
             if (err) throw err;
 
             console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+            console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
             console.log('Purchase completed!!');
             console.log('Purchase completed!!');
             console.log('Purchase completed!!');
+            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+            console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+            console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+            console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+            console.log("Refreshing inventory.");
+            console.log("Refreshing inventory.");
+            console.log("Refreshing inventory.");
+            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
             console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 
             
