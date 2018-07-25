@@ -106,17 +106,20 @@ function inquire(idOption) {
                 name: "quanSelect",
                 message:"Select quantity, please.  " + quanAvail + "  in stock",
                 validate: function(input) {
-                    inputt = parseInt(input);
-
+                    //inputt = parseInt(input);
                     var done = this.async();
 
                     setTimeout(function() {
-                        if (!inputt) {
+                        var n = Math.floor(Number(input));
+                        inputt = (String(n) === input && n >= 0);
+
+
+                        if (inputt === false) {
 
                             done('You need to provide a number');
                             return;
                           };
-                        if (inputt > quanAvail){
+                        if (inputt === true && n >= quanAvail){
                             done("Not enough in stock, please select a lower quantity.");
                           };
 
@@ -161,6 +164,10 @@ function thingy(id, quantity) {
             console.log('Purchase completed!!');
             console.log('Purchase completed!!');
             console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+
+            connection.end(function(err) {
+                if (err) throw err;
+              });
 
             start();
             });
