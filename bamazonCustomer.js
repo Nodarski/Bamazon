@@ -12,25 +12,28 @@ var pool = mysql.createPool({
     debug    :  false
 });
 
+pool.getConnection(function(err,connection){
+    if (err) {
+        console.log(JSON.stringify(
+          {
+            "code" : 100,
+             "status" : "Error in connection database"
+          }));
+
+        return;
+      }   
+
+  console.log('connected as id ' + connection.threadId);
+  start();
+    
+
 
 
 function start(){
-    pool.getConnection(function(err,connection){
-        if (err) {
-            console.log(JSON.stringify(
-              {
-                "code" : 100,
-                 "status" : "Error in connection database"
-              }));
-
-            return;
-          }   
-
-      console.log('connected as id ' + connection.threadId);
-
+    
 
     connection.query("select * from products",function(err,rows){
-      connection.release();
+      
           if(!err) {
               var t = new Table;
               idOption = [ ];
@@ -54,23 +57,17 @@ function start(){
                 })
 
               console.log(t.toString());
-              inquire(idOption);
+              inquire(idOption, connection);
             };        
 
         });
 
-    connection.on('error', function(err) {      
-      console.log(JSON.stringify(
-        {
-          "code" : 100,
-           "status" : "Error in connection database"
-          }));
-      return;     
-      });
-    });
+    
+    
+    
 };
 
-start();
+
 
 
 
@@ -106,7 +103,6 @@ function inquire(idOption) {
                 name: "quanSelect",
                 message:"Select quantity, please.  " + quanAvail + "  in stock",
                 validate: function(input) {
-                    //inputt = parseInt(input);
                     var done = this.async();
 
                     setTimeout(function() {
@@ -130,15 +126,16 @@ function inquire(idOption) {
 
               }
                 ]).then(answer => {
-                    thingy(answers, answer);
+                    thingy(answers, answer, connection);
               });
      });
 };
 
-function thingy(id, quantity) {
+function thingy(id, quantity, connection) {
     console.log(id.idSelect + quantity.quanSelect);
-    pool.query(`SELECT price FROM products WHERE id = ?;`,
+    connection.query(`SELECT price FROM products WHERE id = ?;`,
         [id.idSelect], function (error, results) {
+            
 
         if (error) throw error;
 
@@ -152,10 +149,14 @@ function thingy(id, quantity) {
             }
         ]).then(answer => {
             if (!answer.conf === true){
+                console.log("hope this works!!")
                 start();
-            };
-        pool.query(`UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?;`
+                
+            }
+        else if(answer.conf === true){
+        connection.query(`UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?;`
             ,[quantity.quanSelect, id.idSelect], function(err){
+                
 
             if (err) throw err;
 
@@ -165,14 +166,17 @@ function thingy(id, quantity) {
             console.log('Purchase completed!!');
             console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 
-            connection.end(function(err) {
-                if (err) throw err;
-              });
+            
 
             start();
             });
+        }
         });
     });
 };
+
+
+
+});
 
 
