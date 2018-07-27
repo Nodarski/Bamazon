@@ -134,7 +134,6 @@ function inquire(idOption) {
 function thingy(id, quantity, connection) {
     connection.query(`SELECT price, stock_quantity FROM products WHERE id = ?;`,
         [id.idSelect], function (error, results) {
-            console.log(quantity.quanSelect +">>>" + results[0].stock_quantity)
         if (error) throw error;
         if (quantity.quanSelect > results[0].stock_quantity){ throw "shiet, someone bought it faster than you. we dont have that stock anymore" };
         totalPrice = quantity.quanSelect * results[0].price;
